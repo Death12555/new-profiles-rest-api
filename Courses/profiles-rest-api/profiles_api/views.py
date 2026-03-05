@@ -3,8 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
 from profiles_api import serializers
+from profiles_api import models
+from profiles_api import persmissions
 
 # Create your views here.
 class HelloAPIView(APIView):
@@ -17,8 +20,8 @@ class HelloAPIView(APIView):
             'Is similar to traditional Django View',
             'Gives you the most amount of control over your application logic',
             'Is mapped manually to URLs',
-        ]
 
+        ]
         return Response({'message': 'Hello', 'an_apiview': an_apiview})
     
     def post(self, request):
@@ -89,3 +92,10 @@ class HelloViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Delete an object"""
         return Response({'http_method': 'DELETE'}) 
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle creating and updating profiles"""
+    serializer_class= serializers.UserProfileSerializer
+    queryset= models.UserProfile.objects.all()
+    authentication_classes= (TokenAuthentication,)
+    permission_classes= (persmissions.UpdateOwnProfile,)
